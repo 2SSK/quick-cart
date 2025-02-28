@@ -10,6 +10,9 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["300", "400", "500"] });
 export const metadata: Metadata = {
   title: "QuickCart",
   description: "E-Commerce with NextJS",
+  icons: {
+    icon: "./favicon.svg",
+  },
 };
 
 export default function RootLayout({
