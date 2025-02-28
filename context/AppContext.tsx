@@ -1,5 +1,6 @@
 "use client";
 import { productsDummyData, userDummyData } from "@/assets/assets";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -31,6 +32,7 @@ interface CartItems {
 }
 
 interface AppContextType {
+  user: ReturnType<typeof useUser>["user"];
   currency: string | undefined;
   router: ReturnType<typeof useRouter>;
   isSeller: boolean;
@@ -65,6 +67,8 @@ interface AppContextProviderProps {
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const currency = process.env.NEXT_PUBLIC_CURRENCY;
   const router = useRouter();
+
+  const { user } = useUser();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -129,6 +133,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   }, []);
 
   const value: AppContextType = {
+    user,
     currency,
     router,
     isSeller,
