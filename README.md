@@ -17,10 +17,12 @@ QuickCart is an e-commerce platform that allows users to browse and purchase pro
 - **Next.js**: React framework for server-side rendering and static site generation.
 - **TypeScript**: Superset of JavaScript for type safety.
 - **Tailwind CSS**: Utility-first CSS framework for styling.
+- **MongoDB**: NoSQL database for storing product and user data.
 - **Clerk**: Authentication and user management.
+- **Inngest**: E-commerce API for products and orders.
 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-> **`Timeline`**: 35:00
+> **`Timeline`**: 1:03:10
