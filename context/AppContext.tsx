@@ -1,8 +1,16 @@
 "use client";
-import { productsDummyData, userDummyData } from "@/assets/assets";
-import { useUser } from "@clerk/nextjs";
+import { productsDummyData } from "@/assets/assets";
+import { useAuth, useUser } from "@clerk/nextjs";
+import axios from "axios";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import toast from "react-hot-toast";
 
 // Define interfaces for our data types
 interface Product {
@@ -33,6 +41,7 @@ interface CartItems {
 
 interface AppContextType {
   user: ReturnType<typeof useUser>["user"];
+  getToken: ReturnType<typeof useAuth>["getToken"];
   currency: string | undefined;
   router: ReturnType<typeof useRouter>;
   isSeller: boolean;
@@ -69,6 +78,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const router = useRouter();
 
   const { user } = useUser();
+  const { getToken } = useAuth();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -79,9 +89,30 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setProducts(productsDummyData);
   };
 
-  const fetchUserData = async () => {
-    setUserData(userDummyData);
-  };
+  const fetchUserData = useCallback(async () => {
+    try {
+      if (user?.publicMetadata.role === "seller") {
+        setIsSeller(true);
+      }
+
+      const token = await getToken();
+
+      const { data } = await axios.get("/api/user/data", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.success) {
+        setUserData(data.user);
+        setCartItems(data.user.cartItems);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
+  }, [getToken, user]);
 
   const addToCart = async (itemId: string) => {
     const cartData = structuredClone(cartItems);
@@ -129,11 +160,14 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   }, []);
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    if (user) {
+      fetchUserData();
+    }
+  }, [user, fetchUserData]);
 
   const value: AppContextType = {
     user,
+    getToken,
     currency,
     router,
     isSeller,
