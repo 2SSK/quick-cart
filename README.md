@@ -25,4 +25,4 @@ QuickCart is an e-commerce platform that allows users to browse and purchase pro
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-> **`Timeline`**: 1:25:22
+> **`Timeline`**: 1:50:10

@@ -2,8 +2,13 @@
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
+import { useAppContext } from "@/context/AppContext";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const AddProduct = () => {
+  const { getToken } = useAppContext();
+
   const [files, setFiles] = useState<(File | null)[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -13,6 +18,45 @@ const AddProduct = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("price", price);
+    formData.append("offerPrice", offerPrice);
+
+    for (let i = 0; i < files.length; i++) {
+      if (files[i]) {
+        formData.append(`image${i}`, files[i] as File);
+      }
+    }
+
+    try {
+      const token = await getToken();
+      const { data } = await axios.post("/api/product/add", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        setFiles([]);
+        setName("");
+        setDescription("");
+        setCategory("Earphone");
+        setPrice("");
+        setOfferPrice("");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
   };
 
   return (

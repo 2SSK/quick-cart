@@ -12,6 +12,7 @@
     "@clerk/nextjs": "^6.12.1",
     "@types/mongoose": "^5.11.96",
     "axios": "^1.8.1",
+    "cloudinary": "^2.5.1",
     "inngest": "^3.31.13",
     "mongoose": "^8.11.0",
     "next": "15.2.0",
